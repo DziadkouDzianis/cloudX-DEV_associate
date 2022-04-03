@@ -1,0 +1,22 @@
+{
+  "dependencies": {
+    "secrets1": {
+      "type": "secrets.user"
+    },
+    "mssql1": {
+      "secretStore": "LocalSecretsFile",
+      "resourceId": "/subscriptions/[parameters('subscriptionId')]/resourceGroups/[parameters('resourceGroupName')]/providers/Microsoft.Sql/servers/webdbserver-ddziadkou/databases/Web_db",
+      "type": "mssql.azure",
+      "connectionId": "ConnectionStrings:IdentityConnection"
+    },
+    "mssql2": {
+      "secretStore": "LocalSecretsFile",
+      "resourceId": "/subscriptions/[parameters('subscriptionId')]/resourceGroups/[parameters('resourceGroupName')]/providers/Microsoft.Sql/servers/webdbserver-ddziadkou/databases/Web_db",
+      "type": "mssql.azure",
+      "connectionId": "ConnectionStrings:CatalogConnection"
+    },
+    "identityapp1": {
+      "type": "identityapp.aad"
+    }
+  }
+}

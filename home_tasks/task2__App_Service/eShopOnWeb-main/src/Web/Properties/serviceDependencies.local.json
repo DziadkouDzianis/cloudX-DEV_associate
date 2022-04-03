@@ -1,0 +1,17 @@
+{
+  "dependencies": {
+    "secrets1": {
+      "type": "secrets.user"
+    },
+    "identityapp1": {
+      "type": "identityapp.aad",
+      "connectionId": "AzureAD:ClientSecret"
+    },
+    "mssql1": {
+      "secretStore": "LocalSecretsFile",
+      "resourceId": null,
+      "type": "mssql.local",
+      "connectionId": "ConnectionStrings:CatalogConnection"
+    }
+  }
+}

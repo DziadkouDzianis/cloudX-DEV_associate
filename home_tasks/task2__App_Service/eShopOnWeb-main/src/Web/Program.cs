@@ -126,7 +126,7 @@ app.UseHealthChecks("/health",
             await context.Response.WriteAsync(result);
         }
     });
-if (app.Environment.IsDevelopment())
+//if (app.Environment.IsDevelopment())
 {
     app.Logger.LogInformation("Adding Development middleware...");
     app.UseDeveloperExceptionPage();
@@ -134,12 +134,12 @@ if (app.Environment.IsDevelopment())
     app.UseMigrationsEndPoint();
     app.UseWebAssemblyDebugging();
 }
-else
-{
-    app.Logger.LogInformation("Adding non-Development middleware...");
-    app.UseExceptionHandler("/Error");
-    app.UseHsts();
-}
+//else
+//{
+//    app.Logger.LogInformation("Adding non-Development middleware...");
+//    app.UseExceptionHandler("/Error");
+//    app.UseHsts();
+//}
 
 app.UseHttpsRedirection();
 app.UseBlazorFrameworkFiles();
