@@ -1,0 +1,2 @@
+Throw SA connection string to the azure function configuration files like this:
+CloudStorageAccount = DefaultEndpointsProtocol=https;AccountName=saddziadkou;AccountKey=9jaHnYJMK54F8tx88/6l0GWKTS+n0tuTrcVGgr1yeESuaTNFEhZuLrUmSosVWPUcbxHgHtIpYpNb+AStCL9hHA==;EndpointSuffix=core.windows.net
