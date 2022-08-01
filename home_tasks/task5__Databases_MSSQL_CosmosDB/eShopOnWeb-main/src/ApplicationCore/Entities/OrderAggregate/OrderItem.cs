@@ -3,8 +3,12 @@
 public class OrderItem : BaseEntity
 {
     public CatalogItemOrdered ItemOrdered { get; private set; }
+
     public decimal UnitPrice { get; private set; }
+
     public int Units { get; private set; }
+
+    public decimal Cost => UnitPrice * Units;
 
     private OrderItem()
     {
@@ -18,3 +22,16 @@ public class OrderItem : BaseEntity
         Units = units;
     }
 }
+
+//public class SpecificOrderItem : BaseEntity
+//{
+//    public CatalogItemOrdered ItemOrdered { get; private set; }
+
+//    public SpecificOrderItem(CatalogItemOrdered itemOrdered, decimal multiply)
+//    {
+//        ItemOrdered = itemOrdered;
+//        Multiply = multiply;
+//    }
+
+//    public decimal Multiply { get; private set; }
+//}

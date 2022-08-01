@@ -14,6 +14,11 @@ using System.Collections.Generic;
 
 using Microsoft.Extensions.Configuration.Json;
 
+using Microsoft.Azure.WebJobs;
+using Microsoft.Extensions.Logging;
+using System.Web;
+using System.Net.Http;
+
 namespace AzFunctions
 {
     public class PostData
@@ -35,41 +40,60 @@ namespace AzFunctions
             ILogger log, ExecutionContext context)
         {
             log.LogInformation($"C# Http trigger function executed at: {DateTime.Now}");
-            CreateContainerIfNotExists(log, context);
 
-            CloudStorageAccount storageAccount = GetCloudStorageAccount(context);
-            CloudBlobClient blobClient = storageAccount.CreateCloudBlobClient();
-            CloudBlobContainer container = blobClient.GetContainerReference("ddziadkou-sa");
+            string msg;
 
-            string str = req.Query["name"];
-
-            string randomStr = $"Some_ID__{DateTime.UtcNow.ToString("dd_MM_yyyy__H_mm_ss_fff")}.json";
-            CloudBlockBlob blob = container.GetBlockBlobReference(randomStr);
-
-            //[{ "Id":1,"Quantity":12},{ "Id":2,"Quantity":6}]
-
-            //string str = @"[{ ""Id"":1,""Quantity"":12},{ ""Id"":2,""Quantity"":6}]";
-
-            //var serializeJesonObject = JsonConvert.SerializeObject(new {itemI4d = randomStr, Quantity = $"<html><body><h2> This is a Sample email content ! </h2></body></html>" });
-
-            //ItemJson deptObj = JsonConvert.DeserializeObject<ItemJson>(str);
-            var deptObj = JsonConvert.DeserializeObject<List<ItemJson>>(str);
-            string json = JsonConvert.SerializeObject(deptObj, Formatting.Indented);
-
-            var serializeJesonObject = JsonConvert.SerializeObject(new { str = str });
-            blob.Properties.ContentType = "application/json";
-
-            using (var ms = new MemoryStream())
+            try
             {
-                LoadStreamWithJson(ms, json);
-                await blob.UploadFromStreamAsync(ms);
+                throw new InvalidOperationException("Test exception");
+                //CreateContainerIfNotExists(log, context);
+
+                CloudStorageAccount storageAccount = GetCloudStorageAccount(context);
+                CloudBlobClient blobClient = storageAccount.CreateCloudBlobClient();
+                CloudBlobContainer container = blobClient.GetContainerReference("ddziadkou-sa");
+
+                string str = req.Query["name"];
+
+                string randomStr = $"Some_ID__{DateTime.UtcNow.ToString("dd_MM_yyyy__H_mm_ss_fff")}.json";
+                CloudBlockBlob blob = container.GetBlockBlobReference(randomStr);
+
+                //[{ "Id":1,"Quantity":12},{ "Id":2,"Quantity":6}]
+
+                //string str = @"[{ ""Id"":1,""Quantity"":12},{ ""Id"":2,""Quantity"":6}]";
+
+                //var serializeJesonObject = JsonConvert.SerializeObject(new {itemI4d = randomStr, Quantity = $"<html><body><h2> This is a Sample email content ! </h2></body></html>" });   
+
+                //ItemJson deptObj = JsonConvert.DeserializeObject<ItemJson>(str);
+                var deptObj = JsonConvert.DeserializeObject<List<ItemJson>>(str);
+                string json = JsonConvert.SerializeObject(deptObj, Formatting.Indented);
+
+                var serializeJesonObject = JsonConvert.SerializeObject(new { str = str });
+                blob.Properties.ContentType = "application/json";
+
+                using (var ms = new MemoryStream())
+                {
+                    LoadStreamWithJson(ms, json);
+                    await blob.UploadFromStreamAsync(ms);
+                }
+                log.LogInformation($"Blob {randomStr} is uploaded to container {container.Name}");
+                await blob.SetPropertiesAsync();
+
+                msg = "UploadBlobHttpTrigger function executed successfully!!";
             }
-            log.LogInformation($"Blob {randomStr} is uploaded to container {container.Name}");
-            await blob.SetPropertiesAsync();
 
 
+            catch
+            {
+                // requires using System.Net.Http;
+                var client = new HttpClient();
 
-            return new OkObjectResult("UploadBlobHttpTrigger function executed successfully!!");
+                var logicAppLink = "https://prod-07.eastus.logic.azure.com:443/workflows/73a2218ce2a54486a87aeeb35a184436/triggers/manual/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=Q7ImBLRrTRi1PntHLcqpN389krCBjp9f-IQlnswWgZA";
+                await client.GetAsync(logicAppLink);
+
+                msg = "Simulate error. Blob file wasn't created";
+            }
+
+            return new OkObjectResult(msg);
         }
 
         private static void CreateContainerIfNotExists(ILogger logger, ExecutionContext executionContext)
@@ -99,6 +123,21 @@ namespace AzFunctions
             writer.Write(obj);
             writer.Flush();
             ms.Position = 0;
+        }
+    }
+
+    public class ReadMessageFromQueue
+    {
+        [FunctionName("ReadMessageFromQueue")]
+        public static async Task RunAsync([ServiceBusTrigger("ddziadkou_queue")] string myQueueItem, ILogger log)
+        {
+            //Call thhe place where the OrderItemReserver create function exist with proper content
+            string urlOIR = "https://orderitemsreserver-vsp.azurewebsites.net/api/OrderItemsReserverFunction?name=" + HttpUtility.UrlEncode(myQueueItem);
+            
+            using var client = new HttpClient();
+            var contentOIR = await client.GetStringAsync(urlOIR);
+
+            log.LogInformation($"C# ServiceBus queue trigger function processed message: {myQueueItem}");
         }
     }
 }

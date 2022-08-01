@@ -1,0 +1,31 @@
+{"OrderDetails": [{
+      "ItemOrdered": {
+        "CatalogItemId": 5,
+        "ProductName": "Roslyn Red Sheet",
+        "PictureUri": "/images/products/5.png"
+      },
+      "UnitPrice": 8.5,
+      "Units": 10,
+      "Cost": 85.0,
+      "Id": 1
+    }, {
+      "ItemOrdered": {
+        "CatalogItemId": 4,
+        "ProductName": ".NET Foundation Sweatshirt",
+        "PictureUri": "/images/products/4.png"
+      },
+      "UnitPrice": 12,
+      "Units": 10,
+      "Cost": 120,
+      "Id": 2
+    }
+  ],
+  "Address": {
+    "Street": "123 Main St.",
+    "City": "Kent",
+    "State": "OH",
+    "Country": "United States",
+    "ZipCode": "44240"
+  },
+  "GrandTotal": 205.0
+}
